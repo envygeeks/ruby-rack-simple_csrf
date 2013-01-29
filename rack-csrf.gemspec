@@ -7,9 +7,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Jordon Bedwell"]
   spec.name = "rack-csrf"
   spec.require_paths = ["lib"]
-  spec.add_runtime_dependency("rack")
-  spec.add_development_dependency("rspec")
-  spec.add_development_dependency("simplecov")
+  spec.add_runtime_dependency("rack", "~> 1.5.1")
+  spec.add_development_dependency("rspec", "~> 2.12.0")
   spec.summary = "A simpler CSRF middleware for Rack."
   spec.description = "A simpler CSRF middleware for Rack."
   spec.homepage = "https://envygeeks.com/projects/rack-csrf"

@@ -1,5 +1,9 @@
 /coverage
-/tmp
 /.pryrc
 /.rvmrc
+/.ruby
 /.bundle
+/tmp/**/*
+/log/**/*
+/.ruby-version
+/.ruby_version

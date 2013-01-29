@@ -7,6 +7,7 @@ describe Rack::Csrf do
 
   before :each do
     app.stub(:call).and_return(true)
+
     @env = {
       "REQUEST_PATH" => "#{path}",
       "PATH_INFO" => "#{path}",
@@ -20,14 +21,15 @@ describe Rack::Csrf do
   describe "#call" do
     it "should raise if there is no session" do
       @env.delete("rack.session")
-      expect { Rack::Csrf.new(app).call(@env) }.to(
-        raise_error(Rack::Csrf::CSRFSessionUnavailableError))
+      expect do
+        Rack::Csrf.new(app).call(@env)
+      end.to raise_error Rack::Csrf::CSRFSessionUnavailableError
     end
 
     it "should create a csrf key if there is not one" do
-      @env["rack.session"][Rack::Csrf.key].should(be_nil)
+      @env["rack.session"][Rack::Csrf.key].should be_nil
       Rack::Csrf.new(app, skip: ["/"]).call(@env)
-      @env["rack.session"][Rack::Csrf.key].length.should(eq(64))
+      @env["rack.session"][Rack::Csrf.key].length.should eq 64
     end
   end
 
@@ -37,7 +39,7 @@ describe Rack::Csrf do
         it "should raise if posting on a new session" do
           expect do
             Rack::Csrf.new(app, raise: true).call(@env)
-          end.to(raise_error(Rack::Csrf::CSRFFailedToValidateError))
+          end.to raise_error Rack::Csrf::CSRFFailedToValidateError
         end
 
         it "should raise if the session key does not match" do
@@ -47,35 +49,34 @@ describe Rack::Csrf do
 
           expect do
             Rack::Csrf.new(app, raise: true).call(@env)
-          end.to(raise_error(Rack::Csrf::CSRFFailedToValidateError))
+          end.to raise_error Rack::Csrf::CSRFFailedToValidateError
         end
       end
 
       context "with raise set to false" do
         it "should set 401 w/ unauthorized if posting on a new session" do
-          Rack::Csrf.new(app).call(@env).should(eq([403, {}, "Unauthorized"]))
+          Rack::Csrf.new(app).call(@env).should eq [403, {}, "Unauthorized"]
         end
 
         it "should set 401 w/ unauthorized if the session key doesn't match" do
           @env["REQUEST_URI"] = "/?#{Rack::Csrf.key}=abc1234"
           @env["QUERY_STRING"] = "#{Rack::Csrf.key}=abc1234"
           @env["rack.session"][Rack::Csrf.key] = "abc123"
-
-          Rack::Csrf.new(app).call(@env).should(eq([403, {}, "Unauthorized"]))
+          Rack::Csrf.new(app).call(@env).should eq [403, {}, "Unauthorized"]
         end
       end
 
       it "should accept the X_CSRF_TOKEN header" do
         @env["rack.session"][Rack::Csrf.key] = "abc123"
         @env[Rack::Csrf.header] = "abc123"
-        Rack::Csrf.new(app).call(@env).should(be_true)
+        Rack::Csrf.new(app).call(@env).should be_true
       end
 
       it "should accept a normal token" do
         @env["REQUEST_URI"] = "/?#{Rack::Csrf.field}=abc123"
         @env["QUERY_STRING"] = "#{Rack::Csrf.field}=abc123"
         @env["rack.session"][Rack::Csrf.key] = "abc123"
-        Rack::Csrf.new(app).call(@env).should(be_true)
+        Rack::Csrf.new(app).call(@env).should be_true
       end
     end
   end
@@ -101,22 +102,24 @@ describe Rack::Csrf::Helpers do
 
     context "without opts" do
       it "should work" do
-        TheCls.new.csrf_meta_tag.should(eq(value))
-        Rack::Csrf::Helpers.csrf_meta_tag.should(eq(value))
+        TheCls.new.csrf_meta_tag.should eq value
+        Rack::Csrf::Helpers.csrf_meta_tag.should eq value
       end
     end
 
     context "with a custom field" do
       let(:field) { "my_field" }
+
       it "should work" do
-        TheCls.new.csrf_meta_tag(field: field).should(eq(value))
-        Rack::Csrf::Helpers.csrf_meta_tag(field: field).should(eq(value))
+        TheCls.new.csrf_meta_tag(field: field).should eq value
+        Rack::Csrf::Helpers.csrf_meta_tag(field: field).should eq value
       end
     end
   end
 
   describe "#csrf_form_tag" do
     let(:tag) { "section" }
+
     let(:value) {
       <<-STR.split("\n").map { |s| s.gsub(/^\s+/, "") }.join
         <#{tag} class="hidden">
@@ -127,24 +130,26 @@ describe Rack::Csrf::Helpers do
 
     context "without opts" do
       it "should work" do
-        TheCls.new.csrf_form_tag.should(eq(value))
-        Rack::Csrf::Helpers.csrf_form_tag.should(eq(value))
+        TheCls.new.csrf_form_tag.should eq value
+        Rack::Csrf::Helpers.csrf_form_tag.should eq value
       end
     end
 
     context "with a custom tag" do
       let(:tag) { "div" }
+
       it "should work" do
-        TheCls.new.csrf_form_tag(tag: tag).should(eq(value))
-        Rack::Csrf::Helpers.csrf_form_tag(tag: tag).should(eq(value))
+        TheCls.new.csrf_form_tag(tag: tag).should eq value
+        Rack::Csrf::Helpers.csrf_form_tag(tag: tag).should eq value
       end
     end
 
     context "with a custom field" do
       let(:field) { "my_field" }
+
       it "should work" do
-        TheCls.new.csrf_form_tag(field: field).should(eq(value))
-        Rack::Csrf::Helpers.csrf_form_tag(field: field).should(eq(value))
+        TheCls.new.csrf_form_tag(field: field).should eq value
+        Rack::Csrf::Helpers.csrf_form_tag(field: field).should eq value
       end
     end
   end

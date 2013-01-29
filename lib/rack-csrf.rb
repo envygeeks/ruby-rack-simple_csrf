@@ -23,13 +23,13 @@ module Rack
 
     class CSRFSessionUnavailableError < StandardError
       def initialize(msg = nil)
-        super(msg || "CSRF requires session.")
+        super msg || "CSRF requires session."
       end
     end
 
     class CSRFFailedToValidateError < StandardError
       def initialize(msg = nil)
-        super(msg || "CSRF did not pass.")
+        super msg || "CSRF did not pass."
       end
     end
 
@@ -47,7 +47,7 @@ module Rack
       req.params[@field] == req.env["rack.session"][@key] ||
       req.env[@header] == req.env["rack.session"][@key] ||
       !@methods.include?(req.request_method) ||
-      @skip.any? { |a| a =~ /^(?:#{req.request_method}:)?#{req.path}$/ }
+      @skip.any? { |url| url =~ /^(?:#{req.request_method}:)?#{req.path}$/ }
     end
 
     def raise_if_session_unavailable!(req)
@@ -61,8 +61,8 @@ module Rack
     end
 
     def call(env, req = Rack::Request.new(env))
-      raise_if_session_unavailable!(req)
-      setup_csrf!(req)
+      raise_if_session_unavailable! req
+      setup_csrf! req
       return @app.call(env) if continue?(req)
       @raise ? raise(CSRFFailedToValidateError) : [403, {}, "Unauthorized"]
     end
