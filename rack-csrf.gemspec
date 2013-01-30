@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.name = "rack-csrf"
   spec.require_paths = ["lib"]
   spec.add_runtime_dependency("rack", "~> 1.5.1")
+  spec.add_development_dependency("rake", "~> 10.0.3")
   spec.add_development_dependency("rspec", "~> 2.12.0")
   spec.summary = "A simpler CSRF middleware for Rack."
   spec.description = "A simpler CSRF middleware for Rack."
