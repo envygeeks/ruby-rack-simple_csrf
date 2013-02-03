@@ -15,5 +15,5 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://envygeeks.com/projects/rack-csrf"
   spec.test_files = spec.files.grep(%r{^(?:test|spec|features)/})
   spec.files =
-    ["Readme.md", "Rakefile", "License.txt", "Gemfile"] + Dir["lib/**/*"]
+    ["Readme.md", "Rakefile", "MIT-License", "Gemfile"] + Dir["lib/**/*"]
 end
