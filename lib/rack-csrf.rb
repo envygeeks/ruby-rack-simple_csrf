@@ -50,19 +50,19 @@ module Rack
       @skip.any? { |url| url =~ /^(?:#{req.request_method}:)?#{req.path}$/ }
     end
 
-    def raise_if_session_unavailable!(req)
+    def raise_if_session_unavailable_for!(req)
       unless req.env["rack.session"]
         raise CSRFSessionUnavailableError
       end
     end
 
-    def setup_csrf!(req)
+    def setup_csrf_for!(req)
       req.env["rack.session"][@key] ||= SecureRandom.hex(32)
     end
 
     def call(env, req = Rack::Request.new(env))
-      raise_if_session_unavailable! req
-      setup_csrf! req
+      raise_if_session_unavailable_for! req
+      setup_csrf_for! req
       return @app.call(env) if continue?(req)
       @raise ? raise(CSRFFailedToValidateError) : [403, {}, "Unauthorized"]
     end
