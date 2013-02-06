@@ -65,7 +65,7 @@ module Rack
 
     def render_error_for!(env)
       Proc === @render_with ?
-        @render_with.call(env) : [403, {}, "Unauthorized"]
+        @render_with.call(env) : [403, {}, ["Unauthorized"]]
     end
 
     def call(env, req = Rack::Request.new(env))

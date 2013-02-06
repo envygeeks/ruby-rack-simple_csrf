@@ -56,21 +56,24 @@ describe Rack::Csrf do
       context "with raise set to false" do
         context "render_with set with a proc in opts" do
           it "should call the proc" do
-            Rack::Csrf.new(app, render_with: Proc.new { |env|
-              [403, {}, "Abc123"] }).call(@env).should eq [403, {}, "Abc123"]
+            err = [403, {}, ["Abc123"]]
+            Rack::Csrf.new(app, render_with:
+              Proc.new { |env| err }).call(@env).should eq err
           end
         end
 
         context "without render_with, or with it not set to a proc" do
           it "should set 401 w/ unauthorized if posting on a new session" do
-            Rack::Csrf.new(app).call(@env).should eq [403, {}, "Unauthorized"]
+            Rack::Csrf.new(app).call(
+              @env).should eq( [403, {},["Unauthorized"]])
           end
 
           it "should set 401 unauthorized if the session key doesn't match" do
             @env["REQUEST_URI"] = "/?#{Rack::Csrf.key}=abc1234"
             @env["QUERY_STRING"] = "#{Rack::Csrf.key}=abc1234"
             @env["rack.session"][Rack::Csrf.key] = "abc123"
-            Rack::Csrf.new(app).call(@env).should eq [403, {}, "Unauthorized"]
+            Rack::Csrf.new(app).call(@env).should eq(
+              [403, {}, ["Unauthorized"]])
           end
         end
       end
