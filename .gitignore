@@ -8,9 +8,9 @@
 /.rvmrc
 /.ruby
 /pkg
+/tmp
+/log
 /.bundle
-/tmp/**/*
-/log/**/*
 /**/*.gem
 /.ruby-version
 /.ruby_version
