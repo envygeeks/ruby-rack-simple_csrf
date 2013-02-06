@@ -34,14 +34,16 @@ module Rack
     end
 
     def initialize(app, opts = {})
-      @raise = opts.delete(:raise) || self.class.raise
-      @field = opts.delete(:field) || self.class.field
-      @key = opts.delete(:key) || self.class.key
-      @skip = opts.delete(:skip) || []
+      @raise = opts.fetch(:raise, self.class.raise)
+      @field = opts.fetch(:field, self.class.field)
+      @key = opts.fetch(:key, self.class.key)
+      @skip = opts.fetch(:skip, [])
+
       @app = app
-      @render_with = opts.delete(:render_with)
-      @header = opts.delete(:header) || self.class.header
-      @methods = self.class.http_methods + (opts.delete(:http_methods) || [])
+
+      @render_with = opts[:render_with]
+      @header = opts.fetch(:header, self.class.header)
+      @methods = self.class.http_methods + opts.fetch(:http_methods, [])
     end
 
     def continue?(req)
