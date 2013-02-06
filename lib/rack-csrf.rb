@@ -39,6 +39,7 @@ module Rack
       @key = opts.delete(:key) || self.class.key
       @skip = opts.delete(:skip) || []
       @app = app
+      @render_with = opts.delete(:render_with)
       @header = opts.delete(:header) || self.class.header
       @methods = self.class.http_methods + (opts.delete(:http_methods) || [])
     end
@@ -60,11 +61,16 @@ module Rack
       req.env["rack.session"][@key] ||= SecureRandom.hex(32)
     end
 
+    def render_error_for!(env)
+      Proc === @render_with ?
+        @render_with.call(env) : [403, {}, "Unauthorized"]
+    end
+
     def call(env, req = Rack::Request.new(env))
       raise_if_session_unavailable_for! req
       setup_csrf_for! req
       return @app.call(env) if continue?(req)
-      @raise ? raise(CSRFFailedToValidateError) : [403, {}, "Unauthorized"]
+      @raise ? raise(CSRFFailedToValidateError) : render_error_for!(env)
     end
 
     module Helpers
