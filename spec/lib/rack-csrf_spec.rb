@@ -72,8 +72,8 @@ describe Rack::Csrf do
             @env["REQUEST_URI"] = "/?#{Rack::Csrf.key}=abc1234"
             @env["QUERY_STRING"] = "#{Rack::Csrf.key}=abc1234"
             @env["rack.session"][Rack::Csrf.key] = "abc123"
-            Rack::Csrf.new(app).call(@env).should eq(
-              [403, {}, ["Unauthorized"]])
+            Rack::Csrf.new(app).call(
+              @env).should eq [403, {}, ["Unauthorized"]]
           end
         end
       end
