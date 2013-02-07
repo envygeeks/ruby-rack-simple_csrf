@@ -64,8 +64,7 @@ describe Rack::Csrf do
 
         context "without render_with, or with it not set to a proc" do
           it "should set 401 w/ unauthorized if posting on a new session" do
-            Rack::Csrf.new(app).call(
-              @env).should eq( [403, {},["Unauthorized"]])
+            Rack::Csrf.new(app).call(@env).should eq [403, {},["Unauthorized"]]
           end
 
           it "should set 401 unauthorized if the session key doesn't match" do
