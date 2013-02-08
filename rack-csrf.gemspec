@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary = "A simpler CSRF middleware for Rack."
   s.description = "A simpler CSRF middleware for Rack."
   s.homepage = "https://envygeeks.com/projects/rack-csrf"
-  s.test_files = spec.files.grep(%r{^(?:test|spec|features)/})
+  s.test_files = s.files.grep(%r{^(?:test|spec|features)/})
   s.files =
     ["Readme.md", "Rakefile", "MIT-License", "Gemfile"] + Dir["lib/**/*"]
 end
