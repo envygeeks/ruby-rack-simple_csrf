@@ -40,10 +40,14 @@ describe Rack::Csrf do
           Rack::Csrf.new(app, skip: ["/"]).call(@env).should be_true
         end
 
-        it "Regression#1 should prevent GET:/ from matching POST:/" do
+        it "should prevent GET:/ from matching POST:/" do
+          # Default method is POST.
           Rack::Csrf.new(app, skip:
             ["GET:/"]).call(@env).should eq([403, {}, ["Unauthorized"]])
-          Rack::Csrf.new(app, skip: ["POST:/"]).call(@env).should be_true
+        end
+
+        it "should skip anything on the skip list as \"POST:/\"" do
+          Rack::Csrf.new(app, skip: ["POST:/"]).should be_true
         end
       end
 
