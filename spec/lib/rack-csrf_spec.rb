@@ -35,6 +35,18 @@ describe Rack::Csrf do
 
   describe "#continue?" do
     context "through #call" do
+      context "with a skip list" do
+        it "should skip anything on the skip list as \"/\"" do
+          Rack::Csrf.new(app, skip: ["/"]).call(@env).should be_true
+        end
+
+        it "Regression#1 should prevent GET:/ from matching POST:/" do
+          Rack::Csrf.new(app, skip:
+            ["GET:/"]).call(@env).should eq([403, {}, ["Unauthorized"]])
+          Rack::Csrf.new(app, skip: ["POST:/"]).call(@env).should be_true
+        end
+      end
+
       context "with raise set to true" do
         it "should raise if posting on a new session" do
           expect do

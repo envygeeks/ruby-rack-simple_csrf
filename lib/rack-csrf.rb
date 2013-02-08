@@ -50,7 +50,10 @@ module Rack
       req.params[@field] == req.env["rack.session"][@key] ||
       req.env[@header] == req.env["rack.session"][@key] ||
       !@methods.include?(req.request_method) ||
-      @skip.any? { |url| url =~ /^(?:#{req.request_method}:)?#{req.path}$/ }
+      (Array === @skip && @skip.any? do |url|
+        meth, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
+        url =~ /^#{meth}:#{path}$/ || url =~ /^#{path}$/
+      end)
     end
 
     def raise_if_session_unavailable_for!(req)
