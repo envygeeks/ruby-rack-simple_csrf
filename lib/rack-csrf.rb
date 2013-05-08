@@ -1,4 +1,5 @@
-%w(rack-csrf/version securerandom).each { |a| require a }
+require_relative "rack-csrf/version"
+require "securerandom"
 
 class String
   def strip_heredoc(offset = 0)
