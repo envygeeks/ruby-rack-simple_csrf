@@ -12,7 +12,5 @@
 /log
 /.bundle
 /**/*.gem
-/.ruby-version
-/.ruby_version
 /db/**/*.sqlite3
 
