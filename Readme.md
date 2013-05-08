@@ -13,7 +13,7 @@ require "logger"
 
 class MyApp < Sinatra::Base
   set(:logger, Logger.new($stdout))
-  
+
   CSRF_SKIP_LIST = [
     "/my-path",
     "POST:/my-other-path"
@@ -29,19 +29,18 @@ class MyApp < Sinatra::Base
   post "/" do
     puts "Hello World"
   end
-  
+
   helpers Rack::Csrf::Helpers
-  use Rack::Csrf, skip: CSRF_SKIP_LIST, render_with: proc { |*a| denied!(*a) }
+  use Rack::Csrf, :skip => CSRF_SKIP_LIST, :render_with => proc { |*a| denied!(*a) }
 end
 ```
 
 # Options
 
-Defaults: [lib/rack-csrf#L6](https://github.com/envygeeks/rack-csrf/blob/master/lib/rack-csrf.rb#L6)<br />
-`Rack::Csrf.header` or `:header` The header key<br />
-`Rack::Csrf.key` or `:key` -- The cookie key<br />
-`Rack::Csrf.field` or `:field` -- The auth_field token (meta and form)<br />
-`Rack::Csrf.raise` or `:raise` -- Raise so it can trickle down to catch `Rack::Csrf::CSRFFailedToValidateError`
+`:header` - `HTTP_X_CSRF_TOKEN` The header key<br />
+`:key` - `csrf` -- The cookie key<br />
+`:field` - `auth`  -- The auth_field token (meta and form)<br />
+`:raise` - `false` -- Raise `Rack::Csrf::CSRFFailedToValidateError`
 <br /><br />
 Skip supports an array with values as "METHOD:/url" or "/url".<br /><br />
 
@@ -49,9 +48,7 @@ If you chose not to raise you can optionally set `:render_with` with a callback.
 
 # Helpers
 
-Default opts: [lib/rack-csrf#L15](https://github.com/envygeeks/rack-csrf/blob/master/lib/rack-csrf.rb#L15)
-
 ```ruby
-csrf_meta_tag
-csrf_form_tag(tag: "div")
+csrf_meta_tag(:field => "auth")
+csrf_form_tag(:tag => "div", :field => "auth")
 ```

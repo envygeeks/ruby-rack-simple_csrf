@@ -1,26 +1,13 @@
 %w(rack-csrf/version securerandom).each { |a| require a }
 
+class String
+  def strip_heredoc(offset = 0)
+    gsub(/^[ \t]{#{(scan(/^[ \t]*(?=\S)/).min || "").size}}/, offset = "\s" * (offset || 0))
+  end
+end
+
 module Rack
   class Csrf
-
-    @http_methods = %w(POST PUT DELETE PATCH)
-    @header = "HTTP_X_CSRF_TOKEN"
-    @raise = false
-    @key = "csrf"
-    @field = "auth"
-
-    class << self
-      attr_accessor :header, :key, :field, :http_methods, :raise
-
-      def parse_helper_opts(opts, session)
-        opts[:tag] ||= "section"
-        opts[:field] ||= field
-        opts[:key] ||= key
-        opts[:token] ||= session[opts[:key]]
-      opts
-      end
-    end
-
     class CSRFSessionUnavailableError < StandardError
       def initialize(msg = nil)
         super msg || "CSRF requires session."
@@ -34,16 +21,16 @@ module Rack
     end
 
     def initialize(app, opts = {})
-      @raise = opts.fetch(:raise, self.class.raise)
-      @field = opts.fetch(:field, self.class.field)
-      @key = opts.fetch(:key, self.class.key)
+      @field = opts.fetch(:field, "auth")
+      @raise = opts.fetch(:raise, false)
+      @key = opts.fetch(:key, "csrf")
       @skip = opts.fetch(:skip, [])
 
       @app = app
 
       @render_with = opts[:render_with]
-      @header = opts.fetch(:header, self.class.header)
-      @methods = self.class.http_methods + opts.fetch(:http_methods, [])
+      @header = opts.fetch(:header, "HTTP_X_CSRF_TOKEN")
+      @methods = %w(POST PUT DELETE PATCH) + opts.fetch(:http_methods, [])
     end
 
     def continue?(req)
@@ -67,8 +54,7 @@ module Rack
     end
 
     def render_error_for!(env)
-      Proc === @render_with ?
-        @render_with.call(env) : [403, {}, ["Unauthorized"]]
+      Proc === @render_with ? @render_with.call(env) : [403, {}, ["Unauthorized"]]
     end
 
     def call(env, req = Rack::Request.new(env))
@@ -82,17 +68,17 @@ module Rack
       extend self
 
       def csrf_meta_tag(opts = {}, session = session)
-        opts = Rack::Csrf.parse_helper_opts(opts, session)
-        %Q{<meta name="#{opts[:field]}" content="#{opts[:token]}">}
+        %Q{<meta name="#{opts[:field] || "auth"}" content="#{session[opts[:key] || "csrf"]}">}
       end
 
       def csrf_form_tag(opts = {}, session = session)
-        opts = Rack::Csrf.parse_helper_opts(opts, session)
-        <<-STR.split("\n").map { |s| s.gsub(/^\s+/, "") }.join
-          <#{opts[:tag]} class="hidden">
-           <input type="hidden" name="#{opts[:field]}" value="#{opts[:token]}">
-          </#{opts[:tag]}>
-        STR
+        session_key = session[opts[:key] || "csrf"]
+        tag = opts[:tag] || "div"
+        <<-HTML.strip_heredoc(opts[:offset])
+          <#{tag} class="hidden">
+            <input type="hidden" name="#{opts[:field] || "auth"}" value="#{session_key}">
+          </#{tag}>
+        HTML
       end
     end
   end
