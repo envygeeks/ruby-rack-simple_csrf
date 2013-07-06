@@ -1,6 +1,7 @@
 ENV["RACK_ENV"] = "test"
 
 require_relative '../support/simplecov'
+require_relative '../support/format'
 require 'rack'
 require 'rack-csrf'
 
