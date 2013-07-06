@@ -31,4 +31,9 @@ unless %W(no false).include?(ENV["COVERAGE"])
   end
 end
 
-%w(rack rack-csrf rspec).each { |file| require file }
+require 'rack'
+require 'rack-csrf'
+
+Dir[File.expand_path('../../support/**/*.rb', __FILE__)].each do |f|
+  require f
+end
