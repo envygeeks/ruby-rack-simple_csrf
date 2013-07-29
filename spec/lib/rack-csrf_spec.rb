@@ -49,17 +49,17 @@ describe Rack::Csrf do
 
   it "creates a new csrf key" do
     @env["rack.session"]["csrf"].should be_nil
-    Rack::Csrf.new(app, skip: ["/"]).call(@env)
+    Rack::Csrf.new(app, :skip => ["/"]).call(@env)
     @env["rack.session"]["csrf"].length.should eq 64
   end
 
   it "skips anything on the opts skip list" do
-    Rack::Csrf.new(app, skip: ["POST:/"]).should be_true
-    Rack::Csrf.new(app, skip: ["/"]).call(@env).should be_true
+    Rack::Csrf.new(app, :skip => ["POST:/"]).should be_true
+    Rack::Csrf.new(app, :skip => ["/"]).call(@env).should be_true
   end
 
   it "does not mixup HTTP methods" do
-    Rack::Csrf.new(app, skip: ["GET:/"]).call(@env).should eq([403, {}, ["Unauthorized"]])
+    Rack::Csrf.new(app, :skip => ["GET:/"]).call(@env).should eq([403, {}, ["Unauthorized"]])
   end
 
   context "with raise set to true" do
@@ -84,8 +84,7 @@ describe Rack::Csrf do
     context "render_with set with a proc in opts" do
       it "should call the proc" do
         err = [403, {}, ["Abc123"]]
-        Rack::Csrf.new(app, render_with:
-          Proc.new { |env| err }).call(@env).should eq err
+        Rack::Csrf.new(app, :render_with => Proc.new { |env| err }).call(@env).should eq err
       end
     end
   end
@@ -104,8 +103,8 @@ describe Rack::Csrf::Helpers do
     end
 
     it "allows a custom field name" do
-      Rack::Csrf::Helpers.csrf_meta_tag(:field => "my_field"
-        ).should eq %{<meta name="my_field" content="abc123">}
+      Rack::Csrf::Helpers.csrf_meta_tag(:field =>
+        "my_field").should eq %{<meta name="my_field" content="abc123">}
     end
   end
 
@@ -119,7 +118,7 @@ describe Rack::Csrf::Helpers do
     end
 
     it "accepts a custom tag" do
-      Rack::Csrf::Helpers.csrf_form_tag(tag: "section").should eq <<-STR.strip_heredoc
+      Rack::Csrf::Helpers.csrf_form_tag(:tag => "section").should eq <<-STR.strip_heredoc
         <section class="hidden">
           <input type="hidden" name="auth" value="abc123">
         </section>
@@ -127,7 +126,7 @@ describe Rack::Csrf::Helpers do
     end
 
     it "accepts a custom field name" do
-      Rack::Csrf::Helpers.csrf_form_tag(field: "my_field").should eq <<-STR.strip_heredoc
+      Rack::Csrf::Helpers.csrf_form_tag(:field => "my_field").should eq <<-STR.strip_heredoc
         <div class="hidden">
           <input type="hidden" name="my_field" value="abc123">
         </div>
