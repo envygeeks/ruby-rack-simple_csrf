@@ -41,8 +41,10 @@ describe Rack::Csrf do
 
   it "raises if there is no session" do
     @env.delete("rack.session")
-    expect { Rack::Csrf.new(app).call(@env) }.to(
-      raise_error(Rack::Csrf::CSRFSessionUnavailableError))
+
+    expect_error Rack::Csrf::CSRFSessionUnavailableError do
+      Rack::Csrf.new(app).call(@env)
+    end
   end
 
   it "creates a new csrf key" do
@@ -62,8 +64,9 @@ describe Rack::Csrf do
 
   context "with raise set to true" do
     it "raises if doing a post on a new session" do
-      expect { Rack::Csrf.new(app, raise: true).call(@env)
-        }.to raise_error Rack::Csrf::CSRFFailedToValidateError
+      expect_error Rack::Csrf::CSRFFailedToValidateError do
+        Rack::Csrf.new(app, :raise => true).call(@env)
+      end
     end
 
     it "raises if the csrf key does not match" do
@@ -71,8 +74,9 @@ describe Rack::Csrf do
       @env["QUERY_STRING"] = "csrf=abc1234"
       @env["rack.session"]["csrf"] = "abc123"
 
-      expect { Rack::Csrf.new(app, raise: true).call(@env)
-        }.to raise_error Rack::Csrf::CSRFFailedToValidateError
+      expect_error Rack::Csrf::CSRFFailedToValidateError do
+        Rack::Csrf.new(app, :raise => true).call(@env)
+      end
     end
   end
 
