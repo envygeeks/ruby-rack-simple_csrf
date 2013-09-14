@@ -3,10 +3,8 @@ gemspec
 
 group :development do
   unless ENV["CI"]
-    require "pry"
+    gem "pry"
   end
 
-  gem "luna-rspec-formatters"
   gem "rake"
-  gem "envygeeks-coveralls"
 end
