@@ -3,6 +3,7 @@ require "securerandom"
 
 class String
   def strip_heredoc(offset = 0)
+    # This is modified and adapated from the Rails version.
     gsub(/^[ \t]{#{(scan(/^[ \t]*(?=\S)/).min || "").size}}/, offset = "\s" * (offset || 0))
   end
 end
