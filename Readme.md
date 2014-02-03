@@ -1,16 +1,16 @@
 # Rack::Csrf
 
-[![Build Status](https://travis-ci.org/envygeeks/rack-csrf.png?branch=master)](https://travis-ci.org/envygeeks/rack-csrf) [![Coverage Status](https://coveralls.io/repos/envygeeks/rack-csrf/badge.png?branch=master)](https://coveralls.io/r/envygeeks/rack-csrf) [![Code Climate](https://codeclimate.com/github/envygeeks/rack-csrf.png)](https://codeclimate.com/github/envygeeks/rack-csrf) [![Dependency Status](https://gemnasium.com/envygeeks/rack-csrf.png)](https://gemnasium.com/envygeeks/rack-csrf)
+[![Build Status](https://travis-ci.org/envygeeks/rack-simple_csrf.png?branch=master)](https://travis-ci.org/envygeeks/rack-simple_csrf) [![Coverage Status](https://coveralls.io/repos/envygeeks/rack-simple_csrf/badge.png?branch=master)](https://coveralls.io/r/envygeeks/rack-simple_csrf) [![Code Climate](https://codeclimate.com/github/envygeeks/rack-simple_csrf.png)](https://codeclimate.com/github/envygeeks/rack-simple_csrf) [![Dependency Status](https://gemnasium.com/envygeeks/rack-simple_csrf.png)](https://gemnasium.com/envygeeks/rack-simple_csrf)
 
-Rack::Csrf is my personal version of CSRF for Rack.  It implements only a skip list where everything else must be run through the validator.  It does not allow you to be explicit in what you validate, only explicit in what you do not validate.  The goal is to increase security and make you think about what you are doing before you decide to do it.
+Rack::SimpleCsrf is my personal version of CSRF for Rack.  It implements only a skip list where everything else must be run through the validator.  It does not allow you to be explicit in what you validate, only explicit in what you do not validate.  The goal is to increase security and make you think about what you are doing before you decide to do it.
 
 # Usage
 
-Rack::Csrf has a default output of "Denied", the example belows shows you passing your own caller for us.
+Rack::SimpleCsrf has a default output of "Denied", the example belows shows you passing your own caller for us.
 
 ```ruby
 require "sinatra/base"
-require "rack/csrf"
+require "rack/simple_csrf"
 require "logger"
 
 class MyApp < Sinatra::Base
@@ -24,7 +24,7 @@ class MyApp < Sinatra::Base
   class << self
     def denied!(exception)
       MyApp.logger.error { exception }
-      [403, {}, ["Nice try asshole"]]
+      [403, {}, ["Nice try asshole!"]]
     end
   end
 
@@ -32,8 +32,8 @@ class MyApp < Sinatra::Base
     puts "Hello World"
   end
 
-  helpers Rack::Csrf::Helpers
-  use Rack::Csrf, :skip => CSRF_SKIP_LIST, :render_with => proc { |*a| denied!(*a) }
+  helpers Rack::SimpleCsrf::Helpers
+  use Rack::SimpleCsrf, :skip => CSRF_SKIP_LIST, :render_with => proc { |*a| denied!(*a) }
 end
 ```
 
@@ -42,7 +42,7 @@ end
 `:header` - `HTTP_X_CSRF_TOKEN` The header key<br />
 `:key` - `csrf` -- The cookie key<br />
 `:field` - `auth`  -- The auth_field token (meta and form)<br />
-`:raise` - `false` -- Raise `Rack::Csrf::CSRFFailedToValidateError`
+`:raise` - `false` -- Raise `Rack::SimpleCsrf::CSRFFailedToValidateError`
 <br /><br />
 Skip supports an array with values as "METHOD:/url" or "/url".<br /><br />
 
