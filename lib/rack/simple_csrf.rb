@@ -31,31 +31,7 @@ module Rack
 
       @render_with = opts[:render_with]
       @header = opts.fetch(:header, "HTTP_X_CSRF_TOKEN")
-      @methods = %w(POST PUT DELETE PATCH) + opts.fetch(:http_methods, [])
-    end
-
-    def continue?(req)
-      req.params[@field] == req.env["rack.session"][@key] ||
-      req.env[@header] == req.env["rack.session"][@key] ||
-      !@methods.include?(req.request_method) ||
-      (Array === @skip && @skip.any? do |url|
-        meth, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
-        url =~ /^#{meth}:#{path}$/ || url =~ /^#{path}$/
-      end)
-    end
-
-    def raise_if_session_unavailable_for!(req)
-      unless req.env["rack.session"]
-        raise CSRFSessionUnavailableError
-      end
-    end
-
-    def setup_csrf_for!(req)
-      req.env["rack.session"][@key] ||= SecureRandom.hex(32)
-    end
-
-    def render_error_for!(env)
-      Proc === @render_with ? @render_with.call(env) : [403, {}, ["Unauthorized"]]
+      @methods = (%w(POST PUT DELETE PATCH) + opts.fetch(:http_methods, [])).flatten.uniq
     end
 
     def call(env, req = Rack::Request.new(env))
@@ -63,6 +39,38 @@ module Rack
       setup_csrf_for! req
       return @app.call(env) if continue?(req)
       @raise ? raise(CSRFFailedToValidateError) : render_error_for!(env)
+    end
+
+    private
+    def continue?(req)
+      req.params[@field] == req.env["rack.session"][@key] ||
+      req.env[@header] == req.env["rack.session"][@key] ||
+      ! @methods.include?(req.request_method) || any_skips?(req)
+    end
+
+    private
+    def any_skips?(req)
+      (Array === @skip && @skip.any? do |url|
+        meth, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
+        url =~ /^#{meth}:#{path}$/ || url =~ /^#{path}$/
+      end)
+    end
+
+    private
+    def raise_if_session_unavailable_for!(req)
+      unless req.env["rack.session"]
+        raise CSRFSessionUnavailableError
+      end
+    end
+
+    private
+    def setup_csrf_for!(req)
+      req.env["rack.session"][@key] ||= SecureRandom.hex(32)
+    end
+
+    private
+    def render_error_for!(env)
+      Proc === @render_with ? @render_with.call(env) : [403, {}, ["Unauthorized"]]
     end
 
     module Helpers
