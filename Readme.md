@@ -33,7 +33,12 @@ class MyApp < Sinatra::Base
   end
 
   helpers Rack::SimpleCsrf::Helpers
-  use Rack::SimpleCsrf, :skip => CSRF_SKIP_LIST, :render_with => proc { |*a| denied!(*a) }
+  use Rack::SimpleCsrf, {
+    :skip => CSRF_SKIP_LIST,
+    :render_with => proc { |*a|
+      denied!(*a)
+    }
+  }
 end
 ```
 
