@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.version = Rack::SimpleCsrf::VERSION
   spec.email = ["envygeeks@gmail.com"]
   spec.authors = ["Jordon Bedwell"]
-  spec.name = "rack-csrf"
+  spec.name = "rack-simple_csrf"
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency("rack", "~> 1.5")
