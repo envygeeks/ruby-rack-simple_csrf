@@ -15,10 +15,10 @@ describe Rack::SimpleCsrf do
     }
 
     @env_skip = {
-      "REQUEST_PATH" => "/path",
+      "REQUEST_PATH" => "/path/elem",
       "rack.session" => {},
-      "PATH_INFO" => "/path",
-      "REQUEST_URI" => "/path",
+      "PATH_INFO" => "/path/elem",
+      "REQUEST_URI" => "/path/elem",
       "REQUEST_METHOD" => "POST",
       "rack.input" => Rack::Lint::InputWrapper.new(StringIO.new)
     }
@@ -64,8 +64,10 @@ describe Rack::SimpleCsrf do
 
   it "skips anything on the opts skip list" do
     described_class.new(app, :skip => ["POST:/"]).should be_true
-    described_class.new(app, :skip => ["/"]).call(@env).should be_true
-    described_class.new(app, :skip => ["POST:/*"]).call(@env_skip).should be_true
+    described_class.new(app, :skip => ["/"]).call(@env).should be_a_kind_of(TrueClass)
+    described_class.new(app, :skip => []).call(@env).should eq([403, {}, ["Unauthorized"]])
+    described_class.new(app, :skip => ["POST:/path/.*"]).call(@env_skip).should be_a_kind_of(TrueClass)
+    described_class.new(app, :skip => ["POST:/path"]).call(@env_skip).should eq([403, {}, ["Unauthorized"]])
   end
 
   it "does not mixup HTTP methods" do
