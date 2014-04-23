@@ -18,7 +18,8 @@ class MyApp < Sinatra::Base
 
   CSRF_SKIP_LIST = [
     "/my-path",
-    "POST:/my-other-path"
+    "POST:/my-other-path",
+    "/regexp-path/.*"
   ]
 
   class << self
