@@ -50,10 +50,19 @@ module Rack
 
     private
     def any_skips?(req)
-      (Array === @skip && @skip.any? do |url|
-        meth, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
-        url =~ /^#{meth}:#{path}$/ || url =~ /^#{path}$/
-      end)
+      return false if !@skip.is_a? Array || @skip.empty?
+
+      matched_patterns = @skip.select do |pattern|
+        method, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
+        pattern_split = pattern.split ":"
+        if pattern_split.length > 1
+          pattern_method = pattern_split[0]
+          return false if method !~ /^#{pattern_method}$/
+          pattern = pattern_split[1..-1].join ":"
+        end
+        return true if path =~ /^#{pattern}$/
+      end
+      return matched_patterns.length > 0
     end
 
     private
