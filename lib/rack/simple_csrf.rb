@@ -30,22 +30,25 @@ module Rack
       @app = app
 
       @render_with = opts[:render_with]
-      @methods = (%w(POST PUT DELETE PATCH) + opts.fetch(:http_methods, [])).flatten.uniq
       @header = opts.fetch(:header, "HTTP_X_CSRF_TOKEN")
+      @methods = (%w(POST PUT DELETE PATCH) + \
+        opts.fetch(:http_methods, [])).flatten.uniq
     end
 
     def call(env, req = Rack::Request.new(env))
       raise_if_session_unavailable_for! req
       setup_csrf_for! req
+
       return @app.call(env) if continue?(req)
       @raise ? raise(CSRFFailedToValidateError) : render_error_for!(env)
     end
 
     private
     def continue?(req)
-      req.params[@field] == req.env["rack.session"][@key] ||
-      req.env[@header] == req.env["rack.session"][@key] ||
-      ! @methods.include?(req.request_method) || any_skips?(req)
+      req.params[@field] == req.env["rack.session"][@key] || \
+        req.env[@header] == req.env["rack.session"][@key] || \
+          ! @methods.include?(req.request_method) || \
+            any_skips?(req)
     end
 
     private
@@ -86,22 +89,26 @@ module Rack
 
     private
     def render_error_for!(env)
-      Proc === @render_with ? @render_with.call(env) : [403, {}, ["Unauthorized"]]
+      @render_with.is_a?(Proc) ? @render_with.call(env) : \
+        [403, {}, ["Unauthorized"]]
     end
 
     module Helpers
       extend self
 
       def csrf_meta_tag(opts = {}, session = session)
-        %Q{<meta name="#{opts[:field] || "auth"}" content="#{session[opts[:key] || "csrf"]}">}
+        %Q{<meta name="#{opts[:field] || "auth"}" content="#{ \
+          session[opts[:key] || "csrf"]}">}
       end
 
       def csrf_form_tag(opts = {}, session = session)
         session_key = session[opts[:key] || "csrf"]
         tag = opts[:tag] || "div"
+
         <<-HTML.strip_heredoc(opts[:offset])
           <#{tag} class="hidden">
-            <input type="hidden" name="#{opts[:field] || "auth"}" value="#{session_key}">
+            <input type="hidden" name="#{ \
+              opts[:field] || "auth"}" value="#{session_key}">
           </#{tag}>
         HTML
       end
