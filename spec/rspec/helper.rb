@@ -2,7 +2,6 @@ ENV["RACK_ENV"] = "test"
 
 require_relative "../support/simplecov"
 require "luna/rspec/formatters/checks"
-require "rspec/expect_error"
 require "rack/simple_csrf"
 require "rack"
 

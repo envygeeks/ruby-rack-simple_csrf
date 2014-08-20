@@ -54,17 +54,16 @@ module Rack
     private
     def any_skips?(req)
       return false if ! @skip.is_a?(Array) || @skip.empty?
-      method = Regexp.escape(req.request_method)
-      path   = Regexp.escape(req.path)
-
-      matched_patterns = @skip.select do |p|
-        p_split = p.split ":"
-        if p_split.size > 1
-          if method !~ /\A#{p_split[0]}\Z/
+      method  = Regexp.escape(req.request_method)
+      path    = Regexp.escape(req.path)
+      matched = @skip.select do |p|
+        p = p.split ":"
+        if p.size > 1
+          if method !~ /\A#{p[0]}\Z/
             return false
           end
 
-          p = p_split[1..-1].join ":"
+          p = p[1..-1].join ":"
         end
 
         if path =~ /\A#{p}\Z/
@@ -72,7 +71,7 @@ module Rack
         end
       end
 
-      matched_patterns.size > 0
+      matched.size > 0
     end
 
     private
