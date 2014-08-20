@@ -30,8 +30,8 @@ module Rack
       @app = app
 
       @render_with = opts[:render_with]
-      @header = opts.fetch(:header, "HTTP_X_CSRF_TOKEN")
       @methods = (%w(POST PUT DELETE PATCH) + opts.fetch(:http_methods, [])).flatten.uniq
+      @header = opts.fetch(:header, "HTTP_X_CSRF_TOKEN")
     end
 
     def call(env, req = Rack::Request.new(env))
@@ -50,19 +50,26 @@ module Rack
 
     private
     def any_skips?(req)
-      return false if !@skip.is_a? Array || @skip.empty?
+      return false if ! @skip.is_a?(Array) || @skip.empty?
+      method = Regexp.escape(req.request_method)
+      path   = Regexp.escape(req.path)
 
-      matched_patterns = @skip.select do |pattern|
-        method, path = Regexp.escape(req.request_method), Regexp.escape(req.path)
-        pattern_split = pattern.split ":"
-        if pattern_split.length > 1
-          pattern_method = pattern_split[0]
-          return false if method !~ /^#{pattern_method}$/
-          pattern = pattern_split[1..-1].join ":"
+      matched_patterns = @skip.select do |p|
+        p_split = p.split ":"
+        if p_split.size > 1
+          if method !~ /\A#{p_split[0]}\Z/
+            return false
+          end
+
+          p = p_split[1..-1].join ":"
         end
-        return true if path =~ /^#{pattern}$/
+
+        if path =~ /\A#{p}\Z/
+          return true
+        end
       end
-      return matched_patterns.length > 0
+
+      matched_patterns.size > 0
     end
 
     private
