@@ -90,6 +90,11 @@ describe Rack::SimpleCsrf do
       expect(described_class.new(app, :skip => \
         ["POST:/path"]).call(@env2)).to eq [403, {}, ["Unauthorized"]]
     end
+
+    it "allows when multiple skips" do
+      expect(described_class.new(app, :skip => \
+        ["POST:/path", "PUT:/path/elem", "POST:/path/elem"]).call(@env2)).to eq true
+    end
   end
 
   it "doesn't mix up HTTP METHODS" do
