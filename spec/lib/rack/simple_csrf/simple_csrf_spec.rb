@@ -90,6 +90,24 @@ describe Rack::SimpleCsrf do
       expect(described_class.new(app, :skip => \
         ["POST:/path"]).call(@env2)).to eq [403, {}, ["Unauthorized"]]
     end
+
+    context "with multiple skips in the list" do
+      it "returns true on a normal path" do
+        items = %W(POST:/path PUT:/path /path/elem)
+        expect(described_class.new(app, :skip => items).call(@env2)).to eq true
+      end
+
+      it "returns false" do
+        items = %W(/path POST:/path PUT:/path)
+        expect(described_class.new(app, :skip => items).call(@env2)).to eq \
+          [403, {}, ["Unauthorized"]]
+      end
+
+      it "does not short-circuit before checking all skips" do
+        items = %W(POST:/path PUT:/path/elem POST:/path/elem)
+        expect(described_class.new(app, :skip => items).call(@env2)).to eq true
+      end
+    end
   end
 
   it "doesn't mix up HTTP METHODS" do

@@ -56,22 +56,22 @@ module Rack
       return false if ! @skip.is_a?(Array) || @skip.empty?
       method  = Regexp.escape(req.request_method)
       path    = Regexp.escape(req.path)
-      matched = @skip.select do |p|
+      @skip.select do |p|
         p = p.split ":"
         if p.size > 1
           if method !~ /\A#{p[0]}\Z/
-            return false
+            next
           end
 
-          p = p[1..-1].join ":"
+          p.shift
         end
 
-        if path =~ /\A#{p}\Z/
+        if path =~ /\A#{p.join(":")}\Z/
           return true
         end
       end
 
-      matched.size > 0
+      false
     end
 
     private
