@@ -95,12 +95,12 @@ module Rack
     module Helpers
       extend self
 
-      def csrf_meta_tag(opts = {}, session = session)
+      def csrf_meta_tag(opts = {}, session = self.session)
         %Q{<meta name="#{opts[:field] || "auth"}" content="#{ \
           session[opts[:key] || "csrf"]}">}
       end
 
-      def csrf_form_tag(opts = {}, session = session)
+      def csrf_form_tag(opts = {}, session = self.session)
         session_key = session[opts[:key] || "csrf"]
         tag = opts[:tag] || "div"
 
