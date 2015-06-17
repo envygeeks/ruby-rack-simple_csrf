@@ -1,6 +1,6 @@
 # Rack::Csrf
 
-[![Build Status](https://travis-ci.org/envygeeks/rack-simple_csrf.png?branch=master)](https://travis-ci.org/envygeeks/rack-simple_csrf) [![Coverage Status](https://coveralls.io/repos/envygeeks/rack-simple_csrf/badge.png?branch=master)](https://coveralls.io/r/envygeeks/rack-simple_csrf) [![Code Climate](https://codeclimate.com/github/envygeeks/rack-simple_csrf.png)](https://codeclimate.com/github/envygeeks/rack-simple_csrf) [![Dependency Status](https://gemnasium.com/envygeeks/rack-simple_csrf.png)](https://gemnasium.com/envygeeks/rack-simple_csrf)
+[![Build Status](https://travis-ci.org/envygeeks/ruby-rack-simple_csrf.png?branch=master)](https://travis-ci.org/envygeeks/ruby-rack-simple_csrf) [![Coverage Status](https://coveralls.io/repos/envygeeks/ruby-rack-simple_csrf/badge.png?branch=master)](https://coveralls.io/r/envygeeks/ruby-rack-simple_csrf) [![Code Climate](https://codeclimate.com/github/envygeeks/ruby-rack-simple_csrf.png)](https://codeclimate.com/github/envygeeks/ruby-rack-simple_csrf) [![Dependency Status](https://gemnasium.com/envygeeks/ruby-rack-simple_csrf.png)](https://gemnasium.com/envygeeks/ruby-rack-simple_csrf)
 
 Rack::SimpleCsrf is my personal version of CSRF for Rack.  It implements only a skip list where everything else must be run through the validator.  It does not allow you to be explicit in what you validate, only explicit in what you do not validate.  The goal is to increase security and make you think about what you are doing before you decide to do it.
 

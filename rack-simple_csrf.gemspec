@@ -7,13 +7,13 @@ Gem::Specification.new do |spec|
   spec.description = "A simpler CSRF middleware for Rack."
   spec.summary = "A simpler CSRF middleware for Rack."
   spec.version = Rack::SimpleCsrf::VERSION
-  spec.email = ["envygeeks@gmail.com"]
+  spec.email = ["jordon@envygeeks.io"]
   spec.authors = ["Jordon Bedwell"]
   spec.name = "rack-simple_csrf"
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency("rack", "~> 1.5")
-  spec.add_development_dependency("envygeeks-coveralls", "~> 0.2")
-  spec.add_development_dependency("luna-rspec-formatters", "~> 1.2")
-  spec.add_development_dependency("rspec", "~> 3.0")
+  spec.add_development_dependency("envygeeks-coveralls", "~> 1.0")
+  spec.add_development_dependency("luna-rspec-formatters", "~> 3.3")
+  spec.add_development_dependency("rspec", "~> 3.3")
 end
