@@ -2,7 +2,7 @@ $:.unshift(File.expand_path("../lib", __FILE__))
 require "rack/simple_csrf/version"
 
 Gem::Specification.new do |spec|
-  spec.files = %W(Readme.md Rakefile License Gemfile) + Dir["lib/**/*"]
+  spec.files = %W(README.md Rakefile LICENSE Gemfile) + Dir["lib/**/*"]
   spec.homepage = "https://envygeeks.com/projects/rack-csrf"
   spec.description = "A simpler CSRF middleware for Rack."
   spec.summary = "A simpler CSRF middleware for Rack."
